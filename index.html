@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Login / Sign Up</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
+  body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+  }
+  .card {
+    background: #fff;
+    width: 100%;
+    max-width: 420px;
+    border-radius: 16px;
+    padding: 36px 32px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+  }
+  h2 { text-align: center; margin-bottom: 24px; color: #333; }
+  .tabs { display: flex; margin-bottom: 24px; border-bottom: 2px solid #eee; }
+  .tab {
+    flex: 1;
+    text-align: center;
+    padding: 12px;
+    cursor: pointer;
+    color: #999;
+    font-weight: 600;
+    transition: 0.2s;
+  }
+  .tab.active { color: #667eea; border-bottom: 3px solid #667eea; margin-bottom: -2px; }
+  .form { display: none; }
+  .form.active { display: block; }
+  label { display: block; margin: 12px 0 6px; color: #555; font-size: 14px; }
+  input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 15px;
+    outline: none;
+    transition: border 0.2s;
+  }
+  input:focus { border-color: #667eea; }
+  button {
+    width: 100%;
+    padding: 13px;
+    margin-top: 20px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  button:hover { transform: translateY(-2px); }
+  .msg { margin-top: 14px; text-align: center; font-size: 14px; min-height: 18px; }
+  .msg.error { color: #e74c3c; }
+  .msg.success { color: #27ae60; }
+
+  .welcome { text-align: center; }
+  .welcome .avatar {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px; font-weight: 700;
+    margin: 0 auto 18px;
+  }
+  .welcome h2 { color: #333; }
+  .welcome .info {
+    background: #f7f7fb;
+    border-radius: 10px;
+    padding: 18px;
+    margin: 20px 0;
+    text-align: left;
+  }
+  .welcome .info p { margin: 8px 0; color: #444; }
+  .welcome .info strong { color: #667eea; }
+</style>
+</head>
+<body>
+  <div class="card" id="authCard">
+    <div class="tabs">
+      <div class="tab active" data-tab="login">Login</div>
+      <div class="tab" data-tab="signup">Sign Up</div>
+    </div>
+
+    <form class="form active" id="loginForm">
+      <h2>Welcome Back</h2>
+      <label for="loginEmail">Email</label>
+      <input type="email" id="loginEmail" required />
+      <label for="loginPassword">Password</label>
+      <input type="password" id="loginPassword" required />
+      <button type="submit">Login</button>
+      <div class="msg" id="loginMsg"></div>
+    </form>
+
+    <form class="form" id="signupForm">
+      <h2>Create Account</h2>
+      <label for="signupName">Username</label>
+      <input type="text" id="signupName" required />
+      <label for="signupEmail">Email</label>
+      <input type="email" id="signupEmail" required />
+      <label for="signupPassword">Password</label>
+      <input type="password" id="signupPassword" required minlength="4" />
+      <button type="submit">Sign Up</button>
+      <div class="msg" id="signupMsg"></div>
+    </form>
+  </div>
+
+  <div class="card welcome" id="welcomeCard" style="display:none;">
+    <div class="avatar" id="userInitial">?</div>
+    <h2>Welcome, <span id="userName"></span>!</h2>
+    <div class="info">
+      <p><strong>Username:</strong> <span id="displayName"></span></p>
+      <p><strong>Email:</strong> <span id="displayEmail"></span></p>
+    </div>
+    <button id="logoutBtn">Logout</button>
+  </div>
+
+<script>
+  const tabs = document.querySelectorAll('.tab');
+  const forms = document.querySelectorAll('.form');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      forms.forEach(f => f.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.tab + 'Form').classList.add('active');
+      document.getElementById('loginMsg').textContent = '';
+      document.getElementById('signupMsg').textContent = '';
+    });
+  });
+
+  function getUsers() {
+    return JSON.parse(localStorage.getItem('users') || '[]');
+  }
+  function saveUsers(users) {
+    localStorage.setItem('users', JSON.stringify(users));
+  }
+
+  document.getElementById('signupForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const name = document.getElementById('signupName').value.trim();
+    const email = document.getElementById('signupEmail').value.trim().toLowerCase();
+    const password = document.getElementById('signupPassword').value;
+    const msg = document.getElementById('signupMsg');
+    const users = getUsers();
+    if (users.find(u => u.email === email)) {
+      msg.className = 'msg error';
+      msg.textContent = 'An account with that email already exists.';
+      return;
+    }
+    users.push({ name, email, password });
+    saveUsers(users);
+    msg.className = 'msg success';
+    msg.textContent = 'Account created! You can now log in.';
+    document.getElementById('signupForm').reset();
+    setTimeout(() => {
+      document.querySelector('.tab[data-tab="login"]').click();
+      document.getElementById('loginEmail').value = email;
+    }, 900);
+  });
+
+  document.getElementById('loginForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+    const password = document.getElementById('loginPassword').value;
+    const msg = document.getElementById('loginMsg');
+    const user = getUsers().find(u => u.email === email && u.password === password);
+    if (!user) {
+      msg.className = 'msg error';
+      msg.textContent = 'Invalid email or password.';
+      return;
+    }
+    localStorage.setItem('currentUser', JSON.stringify(user));
+    showWelcome(user);
+  });
+
+  function showWelcome(user) {
+    document.getElementById('authCard').style.display = 'none';
+    document.getElementById('welcomeCard').style.display = 'block';
+    document.getElementById('userName').textContent = user.name;
+    document.getElementById('displayName').textContent = user.name;
+    document.getElementById('displayEmail').textContent = user.email;
+    document.getElementById('userInitial').textContent = user.name.charAt(0).toUpperCase();
+  }
+
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    localStorage.removeItem('currentUser');
+    document.getElementById('welcomeCard').style.display = 'none';
+    document.getElementById('authCard').style.display = 'block';
+    document.getElementById('loginForm').reset();
+  });
+
+  const current = JSON.parse(localStorage.getItem('currentUser') || 'null');
+  if (current) showWelcome(current);
+</script>
+</body>
+</html>
