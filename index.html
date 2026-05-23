@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Login / Sign Up</title>
+<title>Login / Sign Up — Supabase</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
   body {
@@ -61,6 +61,7 @@
     transition: transform 0.15s;
   }
   button:hover { transform: translateY(-2px); }
+  button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
   .msg { margin-top: 14px; text-align: center; font-size: 14px; min-height: 18px; }
   .msg.error { color: #e74c3c; }
   .msg.success { color: #27ae60; }
@@ -85,10 +86,20 @@
   }
   .welcome .info p { margin: 8px 0; color: #444; }
   .welcome .info strong { color: #667eea; }
+  .badge {
+    display: inline-block;
+    background: #e8f5e9;
+    color: #2e7d32;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+  }
 </style>
 </head>
 <body>
   <div class="card" id="authCard">
+    <div style="text-align:center;"><span class="badge">Powered by Supabase</span></div>
     <div class="tabs">
       <div class="tab active" data-tab="login">Login</div>
       <div class="tab" data-tab="signup">Sign Up</div>
@@ -100,7 +111,7 @@
       <input type="email" id="loginEmail" required />
       <label for="loginPassword">Password</label>
       <input type="password" id="loginPassword" required />
-      <button type="submit">Login</button>
+      <button type="submit" id="loginBtn">Login</button>
       <div class="msg" id="loginMsg"></div>
     </form>
 
@@ -112,7 +123,7 @@
       <input type="email" id="signupEmail" required />
       <label for="signupPassword">Password</label>
       <input type="password" id="signupPassword" required minlength="4" />
-      <button type="submit">Sign Up</button>
+      <button type="submit" id="signupBtn">Sign Up</button>
       <div class="msg" id="signupMsg"></div>
     </form>
   </div>
@@ -124,10 +135,19 @@
       <p><strong>Username:</strong> <span id="displayName"></span></p>
       <p><strong>Email:</strong> <span id="displayEmail"></span></p>
     </div>
+    <p style="font-size:12px;color:#888;">Loaded from Supabase database</p>
     <button id="logoutBtn">Logout</button>
   </div>
 
-<script>
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+  // ----- Supabase connection settings -----
+  const SUPABASE_URL = 'https://kmaocriozssleperewdw.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_s832F-Dbv5SdHl9GOlbYwA_-8QZoozi';
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // ----- Tab switching -----
   const tabs = document.querySelectorAll('.tab');
   const forms = document.querySelectorAll('.form');
   tabs.forEach(tab => {
@@ -141,27 +161,35 @@
     });
   });
 
-  function getUsers() {
-    return JSON.parse(localStorage.getItem('users') || '[]');
-  }
-  function saveUsers(users) {
-    localStorage.setItem('users', JSON.stringify(users));
-  }
-
-  document.getElementById('signupForm').addEventListener('submit', e => {
+  // ----- Sign Up: insert a new row into Supabase -----
+  document.getElementById('signupForm').addEventListener('submit', async e => {
     e.preventDefault();
-    const name = document.getElementById('signupName').value.trim();
+    const btn = document.getElementById('signupBtn');
+    const msg = document.getElementById('signupMsg');
+    const username = document.getElementById('signupName').value.trim();
     const email = document.getElementById('signupEmail').value.trim().toLowerCase();
     const password = document.getElementById('signupPassword').value;
-    const msg = document.getElementById('signupMsg');
-    const users = getUsers();
-    if (users.find(u => u.email === email)) {
+
+    btn.disabled = true;
+    msg.className = 'msg';
+    msg.textContent = 'Creating account...';
+
+    const { error } = await supabase
+      .from('app_users')
+      .insert({ username, email, password });
+
+    btn.disabled = false;
+
+    if (error) {
       msg.className = 'msg error';
-      msg.textContent = 'An account with that email already exists.';
+      if (error.code === '23505') {
+        msg.textContent = 'An account with that email already exists.';
+      } else {
+        msg.textContent = 'Error: ' + error.message;
+      }
       return;
     }
-    users.push({ name, email, password });
-    saveUsers(users);
+
     msg.className = 'msg success';
     msg.textContent = 'Account created! You can now log in.';
     document.getElementById('signupForm').reset();
@@ -171,38 +199,62 @@
     }, 900);
   });
 
-  document.getElementById('loginForm').addEventListener('submit', e => {
+  // ----- Login: look up the row in Supabase -----
+  document.getElementById('loginForm').addEventListener('submit', async e => {
     e.preventDefault();
+    const btn = document.getElementById('loginBtn');
+    const msg = document.getElementById('loginMsg');
     const email = document.getElementById('loginEmail').value.trim().toLowerCase();
     const password = document.getElementById('loginPassword').value;
-    const msg = document.getElementById('loginMsg');
-    const user = getUsers().find(u => u.email === email && u.password === password);
-    if (!user) {
+
+    btn.disabled = true;
+    msg.className = 'msg';
+    msg.textContent = 'Logging in...';
+
+    const { data, error } = await supabase
+      .from('app_users')
+      .select('id, username, email, password')
+      .eq('email', email)
+      .maybeSingle();
+
+    btn.disabled = false;
+
+    if (error) {
+      msg.className = 'msg error';
+      msg.textContent = 'Error: ' + error.message;
+      return;
+    }
+    if (!data || data.password !== password) {
       msg.className = 'msg error';
       msg.textContent = 'Invalid email or password.';
       return;
     }
-    localStorage.setItem('currentUser', JSON.stringify(user));
-    showWelcome(user);
+
+    // Save a small token so the user stays logged in on refresh
+    sessionStorage.setItem('currentUser', JSON.stringify({
+      id: data.id, username: data.username, email: data.email
+    }));
+    showWelcome(data);
   });
 
   function showWelcome(user) {
     document.getElementById('authCard').style.display = 'none';
     document.getElementById('welcomeCard').style.display = 'block';
-    document.getElementById('userName').textContent = user.name;
-    document.getElementById('displayName').textContent = user.name;
+    document.getElementById('userName').textContent = user.username;
+    document.getElementById('displayName').textContent = user.username;
     document.getElementById('displayEmail').textContent = user.email;
-    document.getElementById('userInitial').textContent = user.name.charAt(0).toUpperCase();
+    document.getElementById('userInitial').textContent = user.username.charAt(0).toUpperCase();
   }
 
   document.getElementById('logoutBtn').addEventListener('click', () => {
-    localStorage.removeItem('currentUser');
+    sessionStorage.removeItem('currentUser');
     document.getElementById('welcomeCard').style.display = 'none';
     document.getElementById('authCard').style.display = 'block';
     document.getElementById('loginForm').reset();
   });
 
-  const current = JSON.parse(localStorage.getItem('currentUser') || 'null');
+  // If user already logged in this session, restore the welcome screen
+  const current = JSON.parse(sessionStorage.getItem('currentUser') || 'null');
   if (current) showWelcome(current);
 </script>
 </body>
