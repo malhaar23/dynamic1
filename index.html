@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Login / Sign Up — Supabase</title>
+<title>Login / Sign Up — Supabase + AES</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
   body {
@@ -17,7 +17,7 @@
   .card {
     background: #fff;
     width: 100%;
-    max-width: 420px;
+    max-width: 460px;
     border-radius: 16px;
     padding: 36px 32px;
     box-shadow: 0 20px 50px rgba(0,0,0,0.25);
@@ -25,40 +25,23 @@
   h2 { text-align: center; margin-bottom: 24px; color: #333; }
   .tabs { display: flex; margin-bottom: 24px; border-bottom: 2px solid #eee; }
   .tab {
-    flex: 1;
-    text-align: center;
-    padding: 12px;
-    cursor: pointer;
-    color: #999;
-    font-weight: 600;
-    transition: 0.2s;
+    flex: 1; text-align: center; padding: 12px; cursor: pointer;
+    color: #999; font-weight: 600; transition: 0.2s;
   }
   .tab.active { color: #667eea; border-bottom: 3px solid #667eea; margin-bottom: -2px; }
   .form { display: none; }
   .form.active { display: block; }
   label { display: block; margin: 12px 0 6px; color: #555; font-size: 14px; }
   input {
-    width: 100%;
-    padding: 12px 14px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 15px;
-    outline: none;
-    transition: border 0.2s;
+    width: 100%; padding: 12px 14px; border: 1px solid #ddd;
+    border-radius: 8px; font-size: 15px; outline: none; transition: border 0.2s;
   }
   input:focus { border-color: #667eea; }
   button {
-    width: 100%;
-    padding: 13px;
-    margin-top: 20px;
+    width: 100%; padding: 13px; margin-top: 20px;
     background: linear-gradient(135deg, #667eea, #764ba2);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.15s;
+    color: #fff; border: none; border-radius: 8px;
+    font-size: 16px; font-weight: 600; cursor: pointer; transition: transform 0.15s;
   }
   button:hover { transform: translateY(-2px); }
   button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
@@ -68,38 +51,43 @@
 
   .welcome { text-align: center; }
   .welcome .avatar {
-    width: 80px; height: 80px;
-    border-radius: 50%;
+    width: 80px; height: 80px; border-radius: 50%;
     background: linear-gradient(135deg, #667eea, #764ba2);
-    color: #fff;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 36px; font-weight: 700;
-    margin: 0 auto 18px;
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-size: 36px; font-weight: 700; margin: 0 auto 18px;
   }
   .welcome h2 { color: #333; }
   .welcome .info {
-    background: #f7f7fb;
-    border-radius: 10px;
-    padding: 18px;
-    margin: 20px 0;
-    text-align: left;
+    background: #f7f7fb; border-radius: 10px;
+    padding: 18px; margin: 18px 0; text-align: left;
   }
-  .welcome .info p { margin: 8px 0; color: #444; }
-  .welcome .info strong { color: #667eea; }
+  .welcome .info p { margin: 8px 0; color: #444; font-size: 14px; }
+  .welcome .info strong { color: #667eea; display: inline-block; min-width: 90px; }
+  .pwd-box {
+    background: #fff8e1; border-left: 4px solid #f9a825;
+    padding: 14px; border-radius: 8px; margin: 18px 0; text-align: left;
+  }
+  .pwd-box h4 { color: #f57f17; margin-bottom: 10px; font-size: 14px; }
+  .pwd-row {
+    margin: 8px 0; font-size: 13px; color: #555;
+    word-break: break-all; line-height: 1.5;
+  }
+  .pwd-row .lbl { font-weight: 600; color: #333; display: block; margin-bottom: 2px; }
+  .pwd-row code {
+    background: #fff; padding: 4px 8px; border-radius: 4px;
+    font-family: 'Courier New', monospace; color: #c62828; display: inline-block;
+  }
+  .pwd-row.encrypted code { color: #1565c0; }
+  .pwd-row.decrypted code { color: #2e7d32; }
   .badge {
-    display: inline-block;
-    background: #e8f5e9;
-    color: #2e7d32;
-    font-size: 12px;
-    padding: 4px 10px;
-    border-radius: 12px;
-    margin-bottom: 12px;
+    display: inline-block; background: #e8f5e9; color: #2e7d32;
+    font-size: 12px; padding: 4px 10px; border-radius: 12px; margin-bottom: 12px;
   }
 </style>
 </head>
 <body>
   <div class="card" id="authCard">
-    <div style="text-align:center;"><span class="badge">Powered by Supabase</span></div>
+    <div style="text-align:center;"><span class="badge">Supabase + AES Encryption</span></div>
     <div class="tabs">
       <div class="tab active" data-tab="login">Login</div>
       <div class="tab" data-tab="signup">Sign Up</div>
@@ -135,19 +123,82 @@
       <p><strong>Username:</strong> <span id="displayName"></span></p>
       <p><strong>Email:</strong> <span id="displayEmail"></span></p>
     </div>
-    <p style="font-size:12px;color:#888;">Loaded from Supabase database</p>
+
+    <div class="pwd-box">
+      <h4>Password Encryption Demo</h4>
+      <div class="pwd-row">
+        <span class="lbl">Plain text password (what you typed):</span>
+        <code id="pwdPlain">-</code>
+      </div>
+      <div class="pwd-row encrypted">
+        <span class="lbl">Encrypted password (stored in Supabase):</span>
+        <code id="pwdEncrypted">-</code>
+      </div>
+      <div class="pwd-row decrypted">
+        <span class="lbl">Decrypted password (unlocked with secret key):</span>
+        <code id="pwdDecrypted">-</code>
+      </div>
+    </div>
+
     <button id="logoutBtn">Logout</button>
   </div>
 
 <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-  // ----- Supabase connection settings -----
+  // ----- Supabase -----
   const SUPABASE_URL = 'https://kmaocriozssleperewdw.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_s832F-Dbv5SdHl9GOlbYwA_-8QZoozi';
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // ----- Tab switching -----
+  // ----- AES encryption helpers (using browser's built-in Web Crypto API) -----
+  // A fixed secret key string. In a real app this lives on a server.
+  const SECRET = 'dynamic1-demo-secret-key-please-change';
+
+  async function getKey() {
+    // Turn the secret string into a real AES-256 key by hashing it
+    const enc = new TextEncoder();
+    const hash = await crypto.subtle.digest('SHA-256', enc.encode(SECRET));
+    return crypto.subtle.importKey('raw', hash, { name: 'AES-GCM' }, false, ['encrypt', 'decrypt']);
+  }
+
+  function bytesToBase64(bytes) {
+    let bin = '';
+    bytes.forEach(b => bin += String.fromCharCode(b));
+    return btoa(bin);
+  }
+  function base64ToBytes(b64) {
+    const bin = atob(b64);
+    const arr = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+    return arr;
+  }
+
+  async function encryptPassword(plain) {
+    const key = await getKey();
+    const iv = crypto.getRandomValues(new Uint8Array(12)); // random "salt"
+    const cipher = await crypto.subtle.encrypt(
+      { name: 'AES-GCM', iv },
+      key,
+      new TextEncoder().encode(plain)
+    );
+    // Combine iv + cipher and convert to a single readable string
+    const combined = new Uint8Array(iv.length + cipher.byteLength);
+    combined.set(iv, 0);
+    combined.set(new Uint8Array(cipher), iv.length);
+    return bytesToBase64(combined);
+  }
+
+  async function decryptPassword(encryptedB64) {
+    const key = await getKey();
+    const combined = base64ToBytes(encryptedB64);
+    const iv = combined.slice(0, 12);
+    const cipher = combined.slice(12);
+    const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, cipher);
+    return new TextDecoder().decode(plain);
+  }
+
+  // ----- Tabs -----
   const tabs = document.querySelectorAll('.tab');
   const forms = document.querySelectorAll('.form');
   tabs.forEach(tab => {
@@ -161,7 +212,7 @@
     });
   });
 
-  // ----- Sign Up: insert a new row into Supabase -----
+  // ----- Sign Up -----
   document.getElementById('signupForm').addEventListener('submit', async e => {
     e.preventDefault();
     const btn = document.getElementById('signupBtn');
@@ -172,34 +223,40 @@
 
     btn.disabled = true;
     msg.className = 'msg';
-    msg.textContent = 'Creating account...';
+    msg.textContent = 'Encrypting & saving...';
 
-    const { error } = await supabase
-      .from('app_users')
-      .insert({ username, email, password });
+    try {
+      const encrypted = await encryptPassword(password);
 
-    btn.disabled = false;
+      const { error } = await supabase
+        .from('app_users')
+        .insert({ username, email, password: encrypted });
 
-    if (error) {
-      msg.className = 'msg error';
-      if (error.code === '23505') {
-        msg.textContent = 'An account with that email already exists.';
-      } else {
-        msg.textContent = 'Error: ' + error.message;
+      btn.disabled = false;
+
+      if (error) {
+        msg.className = 'msg error';
+        msg.textContent = error.code === '23505'
+          ? 'An account with that email already exists.'
+          : 'Error: ' + error.message;
+        return;
       }
-      return;
-    }
 
-    msg.className = 'msg success';
-    msg.textContent = 'Account created! You can now log in.';
-    document.getElementById('signupForm').reset();
-    setTimeout(() => {
-      document.querySelector('.tab[data-tab="login"]').click();
-      document.getElementById('loginEmail').value = email;
-    }, 900);
+      msg.className = 'msg success';
+      msg.textContent = 'Account created (password encrypted)! You can now log in.';
+      document.getElementById('signupForm').reset();
+      setTimeout(() => {
+        document.querySelector('.tab[data-tab="login"]').click();
+        document.getElementById('loginEmail').value = email;
+      }, 1000);
+    } catch (err) {
+      btn.disabled = false;
+      msg.className = 'msg error';
+      msg.textContent = 'Encryption failed: ' + err.message;
+    }
   });
 
-  // ----- Login: look up the row in Supabase -----
+  // ----- Login -----
   document.getElementById('loginForm').addEventListener('submit', async e => {
     e.preventDefault();
     const btn = document.getElementById('loginBtn');
@@ -209,7 +266,7 @@
 
     btn.disabled = true;
     msg.className = 'msg';
-    msg.textContent = 'Logging in...';
+    msg.textContent = 'Checking...';
 
     const { data, error } = await supabase
       .from('app_users')
@@ -224,17 +281,37 @@
       msg.textContent = 'Error: ' + error.message;
       return;
     }
-    if (!data || data.password !== password) {
+    if (!data) {
       msg.className = 'msg error';
       msg.textContent = 'Invalid email or password.';
       return;
     }
 
-    // Save a small token so the user stays logged in on refresh
-    sessionStorage.setItem('currentUser', JSON.stringify({
-      id: data.id, username: data.username, email: data.email
-    }));
-    showWelcome(data);
+    let decrypted;
+    try {
+      decrypted = await decryptPassword(data.password);
+    } catch (err) {
+      msg.className = 'msg error';
+      msg.textContent = 'Could not decrypt stored password.';
+      return;
+    }
+
+    if (decrypted !== password) {
+      msg.className = 'msg error';
+      msg.textContent = 'Invalid email or password.';
+      return;
+    }
+
+    const sessionUser = {
+      id: data.id,
+      username: data.username,
+      email: data.email,
+      plain: password,
+      encrypted: data.password,
+      decrypted
+    };
+    sessionStorage.setItem('currentUser', JSON.stringify(sessionUser));
+    showWelcome(sessionUser);
   });
 
   function showWelcome(user) {
@@ -244,6 +321,9 @@
     document.getElementById('displayName').textContent = user.username;
     document.getElementById('displayEmail').textContent = user.email;
     document.getElementById('userInitial').textContent = user.username.charAt(0).toUpperCase();
+    document.getElementById('pwdPlain').textContent = user.plain || '(not available this session)';
+    document.getElementById('pwdEncrypted').textContent = user.encrypted || '-';
+    document.getElementById('pwdDecrypted').textContent = user.decrypted || '-';
   }
 
   document.getElementById('logoutBtn').addEventListener('click', () => {
@@ -253,7 +333,6 @@
     document.getElementById('loginForm').reset();
   });
 
-  // If user already logged in this session, restore the welcome screen
   const current = JSON.parse(sessionStorage.getItem('currentUser') || 'null');
   if (current) showWelcome(current);
 </script>
