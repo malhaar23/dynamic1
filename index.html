@@ -13,11 +13,8 @@
   }
   .center { display: flex; align-items: center; justify-content: center; min-height: 90vh; }
   .card {
-    background: #fff;
-    width: 100%;
-    max-width: 460px;
-    border-radius: 16px;
-    padding: 32px 28px;
+    background: #fff; width: 100%; max-width: 460px;
+    border-radius: 16px; padding: 32px 28px;
     box-shadow: 0 20px 50px rgba(0,0,0,0.25);
   }
   h2 { text-align: center; margin-bottom: 20px; color: #333; }
@@ -44,13 +41,16 @@
   button:hover { transform: translateY(-2px); }
   button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
   button.small { padding: 6px 12px; font-size: 13px; }
+  button.tiny { padding: 4px 10px; font-size: 12px; }
   button.secondary { background: #fff; color: #667eea; border: 2px solid #667eea; }
   button.danger { background: #e74c3c; }
   button.success { background: #27ae60; }
+  button.ghost { background: transparent; color: #667eea; padding: 4px 8px; font-size: 13px; }
   .msg { margin-top: 12px; text-align: center; font-size: 14px; min-height: 18px; }
   .msg.error { color: #e74c3c; }
   .msg.success { color: #27ae60; }
   .badge { display: inline-block; background: #e8f5e9; color: #2e7d32; font-size: 12px; padding: 4px 10px; border-radius: 12px; }
+  .edited-tag { font-size: 11px; color: #888; font-style: italic; margin-left: 6px; }
 
   /* App shell */
   .app { max-width: 720px; margin: 0 auto; }
@@ -67,6 +67,7 @@
     font-weight: 700; font-size: 18px;
   }
   .avatar.sm { width: 34px; height: 34px; font-size: 14px; }
+  .avatar.xs { width: 26px; height: 26px; font-size: 12px; }
   .topbar h3 { font-size: 16px; }
   .topbar small { color: #888; font-size: 12px; }
 
@@ -77,6 +78,39 @@
   .section-head { display:flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
   .section-head .count { background:#eef; color:#667eea; font-size: 12px; padding: 3px 10px; border-radius: 10px; font-weight: 600; }
 
+  /* Status card */
+  .status-card {
+    background: #f7f7fb; border-radius: 12px; padding: 14px;
+    margin-bottom: 12px;
+  }
+  .status-top { display: flex; align-items: center; gap: 12px; }
+  .status-top .body { flex: 1; }
+  .status-top .name { font-weight: 600; color: #333; font-size: 14px; }
+  .status-top .meta { font-size: 12px; color: #888; margin-top: 2px; }
+  .status-content { color: #444; font-size: 14px; margin: 10px 0; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+  .status-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .like-btn, .comment-btn {
+    background: #fff; color: #555; border: 1px solid #ddd;
+    padding: 5px 12px; border-radius: 20px; font-size: 13px;
+    cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-weight: 600;
+    transition: 0.15s;
+  }
+  .like-btn.liked { background: #ffe6ec; color: #e91e63; border-color: #ffb3c5; }
+  .like-btn:hover, .comment-btn:hover { transform: translateY(-1px); }
+  .comments-area { margin-top: 10px; border-top: 1px solid #e8e8f0; padding-top: 10px; display: none; }
+  .comments-area.open { display: block; }
+  .comment {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 8px 0;
+  }
+  .comment .body { flex: 1; background: #fff; border-radius: 10px; padding: 8px 12px; }
+  .comment .name { font-weight: 600; font-size: 13px; color: #333; }
+  .comment .text { font-size: 13px; color: #444; margin-top: 2px; line-height: 1.4; word-break: break-word; }
+  .comment .meta { font-size: 11px; color: #999; margin-top: 2px; }
+  .comment-form { display: flex; gap: 8px; margin-top: 8px; }
+  .comment-form input { font-size: 13px; padding: 8px 10px; }
+  .comment-form button { padding: 8px 14px; font-size: 13px; }
+
   .item {
     background: #f7f7fb; border-radius: 10px; padding: 12px 14px;
     margin-bottom: 10px; display: flex; align-items: center; gap: 12px;
@@ -84,7 +118,6 @@
   .item .body { flex: 1; }
   .item .body .name { font-weight: 600; color: #333; font-size: 14px; }
   .item .body .meta { font-size: 12px; color: #888; margin-top: 2px; }
-  .item .body .content { color: #444; font-size: 14px; margin-top: 4px; line-height: 1.4; }
   .item .actions { display: flex; gap: 6px; }
 
   .empty { color: #999; font-size: 14px; text-align: center; padding: 14px; }
@@ -158,7 +191,7 @@
     <div id="myStatusList"><div class="empty">Nothing posted yet.</div></div>
   </div>
 
-  <!-- Feed: statuses from people I follow -->
+  <!-- Feed -->
   <div class="section">
     <div class="section-head">
       <h3>Feed (from people I follow)</h3>
@@ -334,10 +367,10 @@
     return Math.floor(s/86400) + 'd ago';
   }
   function escapeHtml(s) {
-    return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
-  function avatarHtml(name) {
-    return `<div class="avatar sm">${escapeHtml(name.charAt(0).toUpperCase())}</div>`;
+  function avatarHtml(name, size='sm') {
+    return `<div class="avatar ${size}">${escapeHtml((name||'?').charAt(0).toUpperCase())}</div>`;
   }
 
   // ===== Refresh everything =====
@@ -350,11 +383,179 @@
     ]);
   }
 
+  // ===== Likes + comments helpers =====
+  // For a set of status IDs, fetch counts of likes, whether I liked each, and comment counts.
+  async function fetchEngagement(statusIds) {
+    if (!statusIds.length) return { likeCounts:{}, likedByMe:{}, commentCounts:{} };
+
+    const [{ data: likes }, { data: comments }] = await Promise.all([
+      supabase.from('status_likes').select('status_id, user_id').in('status_id', statusIds),
+      supabase.from('status_comments').select('status_id').in('status_id', statusIds)
+    ]);
+
+    const likeCounts = {}, likedByMe = {}, commentCounts = {};
+    (likes || []).forEach(l => {
+      likeCounts[l.status_id] = (likeCounts[l.status_id] || 0) + 1;
+      if (l.user_id === currentUser.id) likedByMe[l.status_id] = true;
+    });
+    (comments || []).forEach(c => {
+      commentCounts[c.status_id] = (commentCounts[c.status_id] || 0) + 1;
+    });
+    return { likeCounts, likedByMe, commentCounts };
+  }
+
+  function renderStatusCard(s, opts) {
+    const isMine = opts.isMine;
+    const username = opts.username || (isMine ? currentUser.username : 'Unknown');
+    const likeCount = opts.likeCount || 0;
+    const liked = opts.liked;
+    const commentCount = opts.commentCount || 0;
+    const editedTag = s.edited_at ? `<span class="edited-tag">(edited)</span>` : '';
+    return `
+      <div class="status-card" data-card="${s.id}">
+        <div class="status-top">
+          ${avatarHtml(username, 'sm')}
+          <div class="body">
+            <div class="name">${isMine ? 'You' : escapeHtml(username)}${editedTag}</div>
+            <div class="meta">${timeAgo(s.created_at)}${isMine ? ` · expires ${timeAgo(s.expires_at).replace(' ago',' from now')}` : ''}</div>
+          </div>
+          ${isMine ? `
+            <div style="display:flex; gap:6px;">
+              <button class="tiny secondary" data-edit="${s.id}">Edit</button>
+              <button class="tiny danger" data-del="${s.id}">Delete</button>
+            </div>` : ''}
+        </div>
+        <div class="status-content" data-content="${s.id}">${escapeHtml(s.content)}</div>
+        <div class="status-actions">
+          <button class="like-btn ${liked ? 'liked' : ''}" data-like="${s.id}">
+            ${liked ? '❤️' : '🤍'} <span data-like-count="${s.id}">${likeCount}</span>
+          </button>
+          <button class="comment-btn" data-toggle-comments="${s.id}">
+            💬 <span data-comment-count="${s.id}">${commentCount}</span>
+          </button>
+        </div>
+        <div class="comments-area" data-comments="${s.id}">
+          <div data-comments-list="${s.id}"><div class="empty" style="padding:6px;">Loading...</div></div>
+          <div class="comment-form">
+            <input type="text" placeholder="Write a comment..." data-comment-input="${s.id}" />
+            <button data-comment-send="${s.id}">Send</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Hook up like / comment / edit / delete on a container after render
+  function bindStatusActions(container) {
+    // LIKE toggle
+    container.querySelectorAll('[data-like]').forEach(btn => btn.addEventListener('click', async () => {
+      const sid = btn.dataset.like;
+      const isLiked = btn.classList.contains('liked');
+      if (isLiked) {
+        await supabase.from('status_likes').delete()
+          .eq('status_id', sid).eq('user_id', currentUser.id);
+      } else {
+        await supabase.from('status_likes').insert({ status_id: sid, user_id: currentUser.id });
+      }
+      // Update UI in place
+      btn.classList.toggle('liked');
+      const span = btn.querySelector(`[data-like-count="${sid}"]`);
+      const n = parseInt(span.textContent, 10) || 0;
+      span.textContent = isLiked ? Math.max(0, n - 1) : n + 1;
+      btn.firstChild.textContent = (isLiked ? '🤍' : '❤️') + ' ';
+    }));
+
+    // TOGGLE comments
+    container.querySelectorAll('[data-toggle-comments]').forEach(btn => btn.addEventListener('click', async () => {
+      const sid = btn.dataset.toggleComments;
+      const area = container.querySelector(`[data-comments="${sid}"]`);
+      const isOpen = area.classList.toggle('open');
+      if (isOpen) await loadComments(sid, container);
+    }));
+
+    // SEND comment
+    container.querySelectorAll('[data-comment-send]').forEach(btn => btn.addEventListener('click', async () => {
+      const sid = btn.dataset.commentSend;
+      const input = container.querySelector(`[data-comment-input="${sid}"]`);
+      const text = input.value.trim();
+      if (!text) return;
+      btn.disabled = true;
+      const { error } = await supabase.from('status_comments').insert({
+        status_id: sid, user_id: currentUser.id, content: text
+      });
+      btn.disabled = false;
+      if (error) { alert('Error: '+error.message); return; }
+      input.value = '';
+      await loadComments(sid, container);
+      // bump comment count
+      const span = container.querySelector(`[data-comment-count="${sid}"]`);
+      span.textContent = (parseInt(span.textContent,10) || 0) + 1;
+    }));
+
+    // EDIT (own statuses only)
+    container.querySelectorAll('[data-edit]').forEach(btn => btn.addEventListener('click', async () => {
+      const sid = btn.dataset.edit;
+      const contentEl = container.querySelector(`[data-content="${sid}"]`);
+      const oldText = contentEl.textContent;
+      const newText = prompt('Edit your status:', oldText);
+      if (newText === null) return;
+      const trimmed = newText.trim();
+      if (!trimmed || trimmed === oldText) return;
+      const { error } = await supabase.from('statuses')
+        .update({ content: trimmed, edited_at: new Date().toISOString() })
+        .eq('id', sid);
+      if (error) { alert('Error: '+error.message); return; }
+      loadMyStatuses();
+    }));
+
+    // DELETE (own statuses only)
+    container.querySelectorAll('[data-del]').forEach(btn => btn.addEventListener('click', async () => {
+      if (!confirm('Delete this status?')) return;
+      await supabase.from('statuses').delete().eq('id', btn.dataset.del);
+      loadMyStatuses();
+    }));
+  }
+
+  async function loadComments(statusId, container) {
+    const listEl = container.querySelector(`[data-comments-list="${statusId}"]`);
+    const { data, error } = await supabase
+      .from('status_comments')
+      .select('id, content, created_at, user_id, app_users(username)')
+      .eq('status_id', statusId)
+      .order('created_at', { ascending: true });
+    if (error) { listEl.innerHTML = `<div class="empty">Error: ${escapeHtml(error.message)}</div>`; return; }
+    if (!data || data.length === 0) {
+      listEl.innerHTML = '<div class="empty" style="padding:6px;">No comments yet. Be first!</div>';
+      return;
+    }
+    listEl.innerHTML = data.map(c => {
+      const u = c.app_users?.username || 'Unknown';
+      const mine = c.user_id === currentUser.id;
+      return `
+        <div class="comment">
+          ${avatarHtml(u, 'xs')}
+          <div class="body">
+            <div class="name">${escapeHtml(u)}${mine ? ' (you)' : ''}</div>
+            <div class="text">${escapeHtml(c.content)}</div>
+            <div class="meta">${timeAgo(c.created_at)}${mine ? ` · <a href="#" data-del-comment="${c.id}">delete</a>` : ''}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+    listEl.querySelectorAll('[data-del-comment]').forEach(a => a.addEventListener('click', async e => {
+      e.preventDefault();
+      await supabase.from('status_comments').delete().eq('id', a.dataset.delComment);
+      await loadComments(statusId, container);
+      const span = container.querySelector(`[data-comment-count="${statusId}"]`);
+      span.textContent = Math.max(0, (parseInt(span.textContent,10) || 0) - 1);
+    }));
+  }
+
   // ===== My statuses =====
   async function loadMyStatuses() {
     const { data, error } = await supabase
       .from('statuses')
-      .select('id, content, created_at, expires_at')
+      .select('id, content, created_at, expires_at, edited_at')
       .eq('user_id', currentUser.id)
       .gt('expires_at', new Date().toISOString())
       .order('created_at', { ascending: false });
@@ -363,28 +564,22 @@
     if (error) { list.innerHTML = `<div class="empty">Error: ${escapeHtml(error.message)}</div>`; return; }
     count.textContent = data.length;
     if (data.length === 0) { list.innerHTML = '<div class="empty">Nothing posted yet.</div>'; return; }
-    list.innerHTML = data.map(s => `
-      <div class="item">
-        ${avatarHtml(currentUser.username)}
-        <div class="body">
-          <div class="name">You</div>
-          <div class="content">${escapeHtml(s.content)}</div>
-          <div class="meta">${timeAgo(s.created_at)} · expires ${timeAgo(s.expires_at).replace(' ago',' from now')}</div>
-        </div>
-        <div class="actions">
-          <button class="small danger" data-del="${s.id}">Delete</button>
-        </div>
-      </div>
-    `).join('');
-    list.querySelectorAll('[data-del]').forEach(btn => btn.addEventListener('click', async () => {
-      await supabase.from('statuses').delete().eq('id', btn.dataset.del);
-      loadMyStatuses();
-    }));
+
+    const ids = data.map(s => s.id);
+    const eng = await fetchEngagement(ids);
+
+    list.innerHTML = data.map(s => renderStatusCard(s, {
+      isMine: true,
+      username: currentUser.username,
+      likeCount: eng.likeCounts[s.id] || 0,
+      liked: !!eng.likedByMe[s.id],
+      commentCount: eng.commentCounts[s.id] || 0
+    })).join('');
+    bindStatusActions(list);
   }
 
-  // ===== Feed (statuses from people I follow with accepted status) =====
+  // ===== Feed =====
   async function loadFeed() {
-    // 1) find users I follow (accepted)
     const { data: follows, error: e1 } = await supabase
       .from('follow_requests')
       .select('to_user_id')
@@ -399,10 +594,9 @@
       list.innerHTML = '<div class="empty">Follow people to see their statuses here.</div>';
       return;
     }
-    // 2) fetch their non-expired statuses + usernames
     const { data: posts, error: e2 } = await supabase
       .from('statuses')
-      .select('id, content, created_at, expires_at, user_id, app_users(username)')
+      .select('id, content, created_at, expires_at, edited_at, user_id, app_users(username)')
       .in('user_id', followedIds)
       .gt('expires_at', new Date().toISOString())
       .order('created_at', { ascending: false });
@@ -412,27 +606,26 @@
       list.innerHTML = '<div class="empty">No active statuses from people you follow.</div>';
       return;
     }
-    list.innerHTML = posts.map(p => `
-      <div class="item">
-        ${avatarHtml(p.app_users?.username || '?')}
-        <div class="body">
-          <div class="name">${escapeHtml(p.app_users?.username || 'Unknown')}</div>
-          <div class="content">${escapeHtml(p.content)}</div>
-          <div class="meta">${timeAgo(p.created_at)}</div>
-        </div>
-      </div>
-    `).join('');
+    const ids = posts.map(p => p.id);
+    const eng = await fetchEngagement(ids);
+
+    list.innerHTML = posts.map(p => renderStatusCard(p, {
+      isMine: false,
+      username: p.app_users?.username || 'Unknown',
+      likeCount: eng.likeCounts[p.id] || 0,
+      liked: !!eng.likedByMe[p.id],
+      commentCount: eng.commentCounts[p.id] || 0
+    })).join('');
+    bindStatusActions(list);
   }
 
   // ===== Discover users =====
   async function loadDiscover() {
-    // all users except me
     const { data: users } = await supabase
       .from('app_users')
       .select('id, username, email')
       .neq('id', currentUser.id)
       .order('created_at', { ascending: false });
-    // all follow rows where I'm the sender (any status)
     const { data: sent } = await supabase
       .from('follow_requests')
       .select('to_user_id, status')
@@ -468,11 +661,8 @@
 
     list.querySelectorAll('[data-follow]').forEach(btn => btn.addEventListener('click', async () => {
       const toId = btn.dataset.follow;
-      // delete any old rejected row, then insert pending
       await supabase.from('follow_requests')
-        .delete()
-        .eq('from_user_id', currentUser.id)
-        .eq('to_user_id', toId);
+        .delete().eq('from_user_id', currentUser.id).eq('to_user_id', toId);
       await supabase.from('follow_requests').insert({
         from_user_id: currentUser.id, to_user_id: toId, status: 'pending'
       });
@@ -481,9 +671,7 @@
     list.querySelectorAll('[data-unfollow]').forEach(btn => btn.addEventListener('click', async () => {
       const toId = btn.dataset.unfollow;
       await supabase.from('follow_requests')
-        .delete()
-        .eq('from_user_id', currentUser.id)
-        .eq('to_user_id', toId);
+        .delete().eq('from_user_id', currentUser.id).eq('to_user_id', toId);
       loadDiscover();
       loadFeed();
     }));
@@ -527,7 +715,7 @@
     }));
   }
 
-  // ===== Auto-refresh feed every 15s for liveness =====
+  // ===== Auto-refresh =====
   setInterval(() => { if (currentUser) { loadFeed(); loadRequests(); } }, 15000);
 
   // ===== Restore session =====
