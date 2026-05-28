@@ -12,11 +12,7 @@
     padding: 20px;
   }
   .center { display: flex; align-items: center; justify-content: center; min-height: 90vh; }
-  .card {
-    background: #fff; width: 100%; max-width: 460px;
-    border-radius: 16px; padding: 32px 28px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.25);
-  }
+  .card { background: #fff; width: 100%; max-width: 460px; border-radius: 16px; padding: 32px 28px; box-shadow: 0 20px 50px rgba(0,0,0,0.25); }
   h2 { text-align: center; margin-bottom: 20px; color: #333; }
   h3 { color: #444; margin: 0; font-size: 16px; }
   .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #eee; }
@@ -52,7 +48,6 @@
   .badge { display: inline-block; background: #e8f5e9; color: #2e7d32; font-size: 12px; padding: 4px 10px; border-radius: 12px; }
   .edited-tag { font-size: 11px; color: #888; font-style: italic; margin-left: 6px; }
 
-  /* App shell */
   .app { max-width: 720px; margin: 0 auto; }
   .topbar {
     background: #fff; border-radius: 14px; padding: 16px 20px; margin-bottom: 18px;
@@ -60,16 +55,49 @@
     display: flex; justify-content: space-between; align-items: center;
   }
   .topbar .me { display: flex; align-items: center; gap: 12px; }
-  .avatar {
-    width: 44px; height: 44px; border-radius: 50%;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: #fff; display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 18px;
-  }
+  .topbar .right { display: flex; gap: 10px; align-items: center; }
+  .avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; }
   .avatar.sm { width: 34px; height: 34px; font-size: 14px; }
   .avatar.xs { width: 26px; height: 26px; font-size: 12px; }
   .topbar h3 { font-size: 16px; }
   .topbar small { color: #888; font-size: 12px; }
+
+  /* Bell + notification panel */
+  .bell-wrap { position: relative; }
+  .bell {
+    width: 44px; height: 44px; border-radius: 50%; background: #f0f0fa;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; cursor: pointer; color: #555; user-select: none;
+    transition: transform 0.15s;
+  }
+  .bell:hover { transform: scale(1.05); }
+  .bell-badge {
+    position: absolute; top: -4px; right: -4px;
+    background: #e74c3c; color: #fff; font-size: 11px; font-weight: 700;
+    min-width: 20px; height: 20px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 6px; border: 2px solid #fff;
+  }
+  .bell-badge.hidden { display: none; }
+  .notif-panel {
+    position: absolute; top: 54px; right: 0; width: 320px; max-width: 92vw;
+    background: #fff; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+    z-index: 50; display: none; overflow: hidden;
+  }
+  .notif-panel.open { display: block; }
+  .notif-head {
+    padding: 14px 16px; border-bottom: 1px solid #eee;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .notif-head h4 { color: #333; font-size: 15px; }
+  .notif-list { max-height: 380px; overflow-y: auto; }
+  .notif-item {
+    padding: 12px 16px; border-bottom: 1px solid #f3f3f7;
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .notif-item.unread { background: #f5f6ff; }
+  .notif-item .text { flex: 1; font-size: 13px; color: #444; line-height: 1.4; }
+  .notif-item .time { font-size: 11px; color: #999; margin-top: 2px; }
 
   .section {
     background: #fff; border-radius: 14px; padding: 20px;
@@ -79,30 +107,38 @@
   .section-head .count { background:#eef; color:#667eea; font-size: 12px; padding: 3px 10px; border-radius: 10px; font-weight: 600; }
 
   /* Status card */
-  .status-card {
-    background: #f7f7fb; border-radius: 12px; padding: 14px;
-    margin-bottom: 12px;
-  }
+  .status-card { background: #f7f7fb; border-radius: 12px; padding: 14px; margin-bottom: 12px; }
   .status-top { display: flex; align-items: center; gap: 12px; }
   .status-top .body { flex: 1; }
   .status-top .name { font-weight: 600; color: #333; font-size: 14px; }
   .status-top .meta { font-size: 12px; color: #888; margin-top: 2px; }
   .status-content { color: #444; font-size: 14px; margin: 10px 0; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
-  .status-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-  .like-btn, .comment-btn {
+  .status-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+
+  /* Reactions */
+  .react-row { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
+  .react-btn {
+    background: #fff; color: #555; border: 1px solid #ddd;
+    padding: 4px 10px; border-radius: 16px; font-size: 13px;
+    cursor: pointer; display: inline-flex; align-items: center; gap: 4px;
+    transition: 0.15s; font-weight: 600;
+  }
+  .react-btn:hover { transform: translateY(-1px); }
+  .react-btn.mine { background: #fff3d6; border-color: #f9a825; color: #b26a00; }
+  .comment-btn {
     background: #fff; color: #555; border: 1px solid #ddd;
     padding: 5px 12px; border-radius: 20px; font-size: 13px;
     cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-weight: 600;
-    transition: 0.15s;
   }
-  .like-btn.liked { background: #ffe6ec; color: #e91e63; border-color: #ffb3c5; }
-  .like-btn:hover, .comment-btn:hover { transform: translateY(-1px); }
+  .views-btn {
+    background: transparent; color: #888; border: none;
+    padding: 5px 8px; font-size: 13px; cursor: pointer; font-weight: 600;
+  }
+  .views-btn:hover { color: #667eea; text-decoration: underline; }
+
   .comments-area { margin-top: 10px; border-top: 1px solid #e8e8f0; padding-top: 10px; display: none; }
   .comments-area.open { display: block; }
-  .comment {
-    display: flex; gap: 10px; align-items: flex-start;
-    padding: 8px 0;
-  }
+  .comment { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; }
   .comment .body { flex: 1; background: #fff; border-radius: 10px; padding: 8px 12px; }
   .comment .name { font-weight: 600; font-size: 13px; color: #333; }
   .comment .text { font-size: 13px; color: #444; margin-top: 2px; line-height: 1.4; word-break: break-word; }
@@ -111,10 +147,7 @@
   .comment-form input { font-size: 13px; padding: 8px 10px; }
   .comment-form button { padding: 8px 14px; font-size: 13px; }
 
-  .item {
-    background: #f7f7fb; border-radius: 10px; padding: 12px 14px;
-    margin-bottom: 10px; display: flex; align-items: center; gap: 12px;
-  }
+  .item { background: #f7f7fb; border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; }
   .item .body { flex: 1; }
   .item .body .name { font-weight: 600; color: #333; font-size: 14px; }
   .item .body .meta { font-size: 12px; color: #888; margin-top: 2px; }
@@ -123,6 +156,19 @@
   .empty { color: #999; font-size: 14px; text-align: center; padding: 14px; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   @media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
+
+  /* Modal */
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    background: #fff; border-radius: 14px; padding: 22px; max-width: 380px; width: 100%;
+    max-height: 80vh; overflow-y: auto;
+  }
+  .modal h3 { margin-bottom: 14px; }
+  .modal .close { float: right; cursor: pointer; color: #999; font-size: 20px; }
 </style>
 </head>
 <body>
@@ -162,7 +208,6 @@
 
 <!-- ============ APP SCREEN ============ -->
 <div class="app" id="appScreen" style="display:none;">
-  <!-- Top bar -->
   <div class="topbar">
     <div class="me">
       <div class="avatar" id="topAvatar">?</div>
@@ -171,10 +216,24 @@
         <small id="topEmail">-</small>
       </div>
     </div>
-    <button class="small secondary" id="logoutBtn">Logout</button>
+    <div class="right">
+      <div class="bell-wrap">
+        <div class="bell" id="bellBtn" title="Notifications">🔔</div>
+        <div class="bell-badge hidden" id="bellBadge">0</div>
+        <div class="notif-panel" id="notifPanel">
+          <div class="notif-head">
+            <h4>Notifications</h4>
+            <button class="tiny ghost" id="markAllReadBtn">Mark all read</button>
+          </div>
+          <div class="notif-list" id="notifList">
+            <div class="empty">No notifications yet.</div>
+          </div>
+        </div>
+      </div>
+      <button class="small secondary" id="logoutBtn">Logout</button>
+    </div>
   </div>
 
-  <!-- Post a status -->
   <div class="section">
     <div class="section-head"><h3>Post a Status</h3></div>
     <textarea id="statusInput" placeholder="What's on your mind? (auto-expires in 24h)"></textarea>
@@ -182,96 +241,89 @@
     <div class="msg" id="postStatusMsg"></div>
   </div>
 
-  <!-- My statuses -->
   <div class="section">
-    <div class="section-head">
-      <h3>My Statuses</h3>
-      <span class="count" id="myStatusCount">0</span>
-    </div>
+    <div class="section-head"><h3>My Statuses</h3><span class="count" id="myStatusCount">0</span></div>
     <div id="myStatusList"><div class="empty">Nothing posted yet.</div></div>
   </div>
 
-  <!-- Feed -->
   <div class="section">
-    <div class="section-head">
-      <h3>Feed (from people I follow)</h3>
-      <span class="count" id="feedCount">0</span>
-    </div>
+    <div class="section-head"><h3>Feed (from people I follow)</h3><span class="count" id="feedCount">0</span></div>
     <div id="feedList"><div class="empty">Follow people to see their statuses here.</div></div>
   </div>
 
   <div class="grid2">
-    <!-- Discover users -->
     <div class="section">
-      <div class="section-head">
-        <h3>Discover Users</h3>
-        <span class="count" id="discoverCount">0</span>
-      </div>
+      <div class="section-head"><h3>Discover Users</h3><span class="count" id="discoverCount">0</span></div>
       <div id="discoverList"><div class="empty">No other users yet.</div></div>
     </div>
-
-    <!-- Incoming follow requests -->
     <div class="section">
-      <div class="section-head">
-        <h3>Follow Requests</h3>
-        <span class="count" id="reqCount">0</span>
-      </div>
+      <div class="section-head"><h3>Follow Requests</h3><span class="count" id="reqCount">0</span></div>
       <div id="reqList"><div class="empty">No requests right now.</div></div>
     </div>
+  </div>
+</div>
+
+<!-- Generic Modal -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal">
+    <span class="close" id="modalClose">&times;</span>
+    <h3 id="modalTitle">Title</h3>
+    <div id="modalBody"></div>
   </div>
 </div>
 
 <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-  // ===== Supabase =====
   const SUPABASE_URL = 'https://kmaocriozssleperewdw.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_s832F-Dbv5SdHl9GOlbYwA_-8QZoozi';
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // ===== AES password encryption =====
+  // ===== AES =====
   const SECRET = 'dynamic1-demo-secret-key-please-change';
-  async function getKey() {
-    const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(SECRET));
-    return crypto.subtle.importKey('raw', hash, { name: 'AES-GCM' }, false, ['encrypt', 'decrypt']);
-  }
-  function b64(bytes) { let s=''; bytes.forEach(b=>s+=String.fromCharCode(b)); return btoa(s); }
-  function fromB64(s) { const bin=atob(s); const a=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i); return a; }
-  async function encryptPwd(plain) {
-    const key = await getKey();
-    const iv = crypto.getRandomValues(new Uint8Array(12));
-    const c = await crypto.subtle.encrypt({name:'AES-GCM', iv}, key, new TextEncoder().encode(plain));
-    const combined = new Uint8Array(iv.length + c.byteLength);
-    combined.set(iv,0); combined.set(new Uint8Array(c), iv.length);
-    return b64(combined);
-  }
-  async function decryptPwd(enc) {
-    const key = await getKey();
-    const all = fromB64(enc);
-    const iv = all.slice(0,12); const c = all.slice(12);
-    return new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM', iv}, key, c));
-  }
+  async function getKey() { const h = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(SECRET)); return crypto.subtle.importKey('raw', h, { name: 'AES-GCM' }, false, ['encrypt','decrypt']); }
+  function b64(bytes){let s='';bytes.forEach(b=>s+=String.fromCharCode(b));return btoa(s);}
+  function fromB64(s){const bin=atob(s);const a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return a;}
+  async function encryptPwd(p){const k=await getKey();const iv=crypto.getRandomValues(new Uint8Array(12));const c=await crypto.subtle.encrypt({name:'AES-GCM',iv},k,new TextEncoder().encode(p));const all=new Uint8Array(iv.length+c.byteLength);all.set(iv,0);all.set(new Uint8Array(c),iv.length);return b64(all);}
+  async function decryptPwd(e){const k=await getKey();const all=fromB64(e);const iv=all.slice(0,12);const c=all.slice(12);return new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv},k,c));}
 
   // ===== State =====
   let currentUser = null;
+  const REACTIONS = ['👍','❤️','😂','😮','😢'];
+
+  // ===== Helpers =====
+  function timeAgo(iso) {
+    const s = Math.floor((Date.now() - new Date(iso)) / 1000);
+    if (s < 0) return Math.floor(-s/60)+'m from now';
+    if (s < 60) return s + 's ago';
+    if (s < 3600) return Math.floor(s/60) + 'm ago';
+    if (s < 86400) return Math.floor(s/3600) + 'h ago';
+    return Math.floor(s/86400) + 'd ago';
+  }
+  function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function avatarHtml(name, size='sm') { return `<div class="avatar ${size}">${escapeHtml((name||'?').charAt(0).toUpperCase())}</div>`; }
+  function openModal(title, html) {
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalBody').innerHTML = html;
+    document.getElementById('modalBackdrop').classList.add('open');
+  }
+  document.getElementById('modalClose').addEventListener('click', () => document.getElementById('modalBackdrop').classList.remove('open'));
+  document.getElementById('modalBackdrop').addEventListener('click', e => { if (e.target.id === 'modalBackdrop') document.getElementById('modalBackdrop').classList.remove('open'); });
 
   // ===== Auth tabs =====
-  const tabs = document.querySelectorAll('.tab');
-  const forms = document.querySelectorAll('.form');
-  tabs.forEach(tab => tab.addEventListener('click', () => {
-    tabs.forEach(t => t.classList.remove('active'));
-    forms.forEach(f => f.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(tab => tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.form').forEach(f => f.classList.remove('active'));
     tab.classList.add('active');
     document.getElementById(tab.dataset.tab + 'Form').classList.add('active');
     document.getElementById('loginMsg').textContent = '';
     document.getElementById('signupMsg').textContent = '';
   }));
 
-  // ===== Sign up =====
+  // ===== Sign up / Login / Logout =====
   document.getElementById('signupForm').addEventListener('submit', async e => {
     e.preventDefault();
-    const btn = document.getElementById('signupBtn');
-    const msg = document.getElementById('signupMsg');
+    const btn = document.getElementById('signupBtn'), msg = document.getElementById('signupMsg');
     const username = document.getElementById('signupName').value.trim();
     const email = document.getElementById('signupEmail').value.trim().toLowerCase();
     const password = document.getElementById('signupPassword').value;
@@ -280,62 +332,35 @@
       const encrypted = await encryptPwd(password);
       const { error } = await supabase.from('app_users').insert({ username, email, password: encrypted });
       btn.disabled = false;
-      if (error) {
-        msg.className='msg error';
-        msg.textContent = error.code === '23505' ? 'Email already registered.' : 'Error: '+error.message;
-        return;
-      }
+      if (error) { msg.className='msg error'; msg.textContent = error.code === '23505' ? 'Email already registered.' : 'Error: '+error.message; return; }
       msg.className='msg success'; msg.textContent='Account created! Logging you in...';
       document.getElementById('signupForm').reset();
-      setTimeout(() => {
-        document.querySelector('.tab[data-tab="login"]').click();
-        document.getElementById('loginEmail').value = email;
-      }, 700);
-    } catch (err) {
-      btn.disabled=false; msg.className='msg error'; msg.textContent='Error: '+err.message;
-    }
+      setTimeout(() => { document.querySelector('.tab[data-tab="login"]').click(); document.getElementById('loginEmail').value = email; }, 700);
+    } catch (err) { btn.disabled=false; msg.className='msg error'; msg.textContent='Error: '+err.message; }
   });
-
-  // ===== Login =====
   document.getElementById('loginForm').addEventListener('submit', async e => {
     e.preventDefault();
-    const btn = document.getElementById('loginBtn');
-    const msg = document.getElementById('loginMsg');
+    const btn = document.getElementById('loginBtn'), msg = document.getElementById('loginMsg');
     const email = document.getElementById('loginEmail').value.trim().toLowerCase();
     const password = document.getElementById('loginPassword').value;
     btn.disabled = true; msg.className='msg'; msg.textContent='Checking...';
-
-    const { data, error } = await supabase
-      .from('app_users')
-      .select('id, username, email, password')
-      .eq('email', email)
-      .maybeSingle();
-
+    const { data, error } = await supabase.from('app_users').select('id,username,email,password').eq('email', email).maybeSingle();
     btn.disabled = false;
     if (error) { msg.className='msg error'; msg.textContent='Error: '+error.message; return; }
     if (!data) { msg.className='msg error'; msg.textContent='Invalid email or password.'; return; }
-
-    let decrypted;
-    try { decrypted = await decryptPwd(data.password); }
-    catch { msg.className='msg error'; msg.textContent='Could not decrypt stored password.'; return; }
-
-    if (decrypted !== password) { msg.className='msg error'; msg.textContent='Invalid email or password.'; return; }
-
+    let dec; try { dec = await decryptPwd(data.password); } catch { msg.className='msg error'; msg.textContent='Decrypt error.'; return; }
+    if (dec !== password) { msg.className='msg error'; msg.textContent='Invalid email or password.'; return; }
     currentUser = { id: data.id, username: data.username, email: data.email };
     sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
     enterApp();
   });
-
-  // ===== Logout =====
   document.getElementById('logoutBtn').addEventListener('click', () => {
-    sessionStorage.removeItem('currentUser');
-    currentUser = null;
+    sessionStorage.removeItem('currentUser'); currentUser = null;
     document.getElementById('appScreen').style.display = 'none';
     document.getElementById('authScreen').style.display = 'flex';
     document.getElementById('loginForm').reset();
   });
 
-  // ===== Enter app =====
   function enterApp() {
     document.getElementById('authScreen').style.display = 'none';
     document.getElementById('appScreen').style.display = 'block';
@@ -358,66 +383,50 @@
     loadMyStatuses();
   });
 
-  // ===== Helpers =====
-  function timeAgo(iso) {
-    const s = Math.floor((Date.now() - new Date(iso)) / 1000);
-    if (s < 60) return s + 's ago';
-    if (s < 3600) return Math.floor(s/60) + 'm ago';
-    if (s < 86400) return Math.floor(s/3600) + 'h ago';
-    return Math.floor(s/86400) + 'd ago';
-  }
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  }
-  function avatarHtml(name, size='sm') {
-    return `<div class="avatar ${size}">${escapeHtml((name||'?').charAt(0).toUpperCase())}</div>`;
-  }
-
-  // ===== Refresh everything =====
-  async function refreshAll() {
-    await Promise.all([
-      loadMyStatuses(),
-      loadFeed(),
-      loadDiscover(),
-      loadRequests()
-    ]);
-  }
-
-  // ===== Likes + comments helpers =====
-  // For a set of status IDs, fetch counts of likes, whether I liked each, and comment counts.
+  // ===== Engagement loader: reactions + comments + views per batch =====
   async function fetchEngagement(statusIds) {
-    if (!statusIds.length) return { likeCounts:{}, likedByMe:{}, commentCounts:{} };
-
-    const [{ data: likes }, { data: comments }] = await Promise.all([
-      supabase.from('status_likes').select('status_id, user_id').in('status_id', statusIds),
-      supabase.from('status_comments').select('status_id').in('status_id', statusIds)
+    if (!statusIds.length) return { reactionCounts:{}, myReactions:{}, commentCounts:{}, viewCounts:{} };
+    const [rxRes, cmRes, vwRes] = await Promise.all([
+      supabase.from('status_likes').select('status_id, user_id, reaction').in('status_id', statusIds),
+      supabase.from('status_comments').select('status_id').in('status_id', statusIds),
+      supabase.from('status_views').select('status_id').in('status_id', statusIds)
     ]);
-
-    const likeCounts = {}, likedByMe = {}, commentCounts = {};
-    (likes || []).forEach(l => {
-      likeCounts[l.status_id] = (likeCounts[l.status_id] || 0) + 1;
-      if (l.user_id === currentUser.id) likedByMe[l.status_id] = true;
+    const reactionCounts = {}, myReactions = {}, commentCounts = {}, viewCounts = {};
+    (rxRes.data || []).forEach(r => {
+      if (!reactionCounts[r.status_id]) reactionCounts[r.status_id] = {};
+      reactionCounts[r.status_id][r.reaction] = (reactionCounts[r.status_id][r.reaction] || 0) + 1;
+      if (r.user_id === currentUser.id) myReactions[r.status_id] = r.reaction;
     });
-    (comments || []).forEach(c => {
-      commentCounts[c.status_id] = (commentCounts[c.status_id] || 0) + 1;
-    });
-    return { likeCounts, likedByMe, commentCounts };
+    (cmRes.data || []).forEach(c => { commentCounts[c.status_id] = (commentCounts[c.status_id] || 0) + 1; });
+    (vwRes.data || []).forEach(v => { viewCounts[v.status_id] = (viewCounts[v.status_id] || 0) + 1; });
+    return { reactionCounts, myReactions, commentCounts, viewCounts };
   }
 
+  // ===== Card renderer =====
   function renderStatusCard(s, opts) {
     const isMine = opts.isMine;
     const username = opts.username || (isMine ? currentUser.username : 'Unknown');
-    const likeCount = opts.likeCount || 0;
-    const liked = opts.liked;
-    const commentCount = opts.commentCount || 0;
     const editedTag = s.edited_at ? `<span class="edited-tag">(edited)</span>` : '';
+    const myReact = opts.myReact;
+    const counts = opts.reactionCounts || {};
+
+    const reactionsHtml = REACTIONS.map(r => {
+      const c = counts[r] || 0;
+      const mine = myReact === r ? 'mine' : '';
+      return `<button class="react-btn ${mine}" data-react="${s.id}" data-emoji="${r}">${r}${c > 0 ? ' <span>'+c+'</span>' : ''}</button>`;
+    }).join('');
+
+    const viewsHtml = isMine
+      ? `<button class="views-btn" data-views="${s.id}">👁️ ${opts.viewCount || 0} views</button>`
+      : '';
+
     return `
       <div class="status-card" data-card="${s.id}">
         <div class="status-top">
           ${avatarHtml(username, 'sm')}
           <div class="body">
             <div class="name">${isMine ? 'You' : escapeHtml(username)}${editedTag}</div>
-            <div class="meta">${timeAgo(s.created_at)}${isMine ? ` · expires ${timeAgo(s.expires_at).replace(' ago',' from now')}` : ''}</div>
+            <div class="meta">${timeAgo(s.created_at)}${isMine ? ` · expires ${timeAgo(s.expires_at)}` : ''}</div>
           </div>
           ${isMine ? `
             <div style="display:flex; gap:6px;">
@@ -427,12 +436,9 @@
         </div>
         <div class="status-content" data-content="${s.id}">${escapeHtml(s.content)}</div>
         <div class="status-actions">
-          <button class="like-btn ${liked ? 'liked' : ''}" data-like="${s.id}">
-            ${liked ? '❤️' : '🤍'} <span data-like-count="${s.id}">${likeCount}</span>
-          </button>
-          <button class="comment-btn" data-toggle-comments="${s.id}">
-            💬 <span data-comment-count="${s.id}">${commentCount}</span>
-          </button>
+          <div class="react-row">${reactionsHtml}</div>
+          <button class="comment-btn" data-toggle-comments="${s.id}">💬 <span data-comment-count="${s.id}">${opts.commentCount || 0}</span></button>
+          ${viewsHtml}
         </div>
         <div class="comments-area" data-comments="${s.id}">
           <div data-comments-list="${s.id}"><div class="empty" style="padding:6px;">Loading...</div></div>
@@ -445,32 +451,45 @@
     `;
   }
 
-  // Hook up like / comment / edit / delete on a container after render
-  function bindStatusActions(container) {
-    // LIKE toggle
-    container.querySelectorAll('[data-like]').forEach(btn => btn.addEventListener('click', async () => {
-      const sid = btn.dataset.like;
-      const isLiked = btn.classList.contains('liked');
-      if (isLiked) {
-        await supabase.from('status_likes').delete()
-          .eq('status_id', sid).eq('user_id', currentUser.id);
+  // ===== Bind actions on rendered cards =====
+  function bindStatusActions(container, postOwnerMap) {
+    // REACT toggle/switch
+    container.querySelectorAll('[data-react]').forEach(btn => btn.addEventListener('click', async () => {
+      const sid = btn.dataset.react;
+      const emoji = btn.dataset.emoji;
+      // find my existing reaction
+      const { data: existing } = await supabase.from('status_likes')
+        .select('id, reaction').eq('status_id', sid).eq('user_id', currentUser.id).maybeSingle();
+      if (existing && existing.reaction === emoji) {
+        // toggle off
+        await supabase.from('status_likes').delete().eq('id', existing.id);
+      } else if (existing) {
+        // switch reaction
+        await supabase.from('status_likes').update({ reaction: emoji }).eq('id', existing.id);
       } else {
-        await supabase.from('status_likes').insert({ status_id: sid, user_id: currentUser.id });
+        // new reaction
+        await supabase.from('status_likes').insert({ status_id: sid, user_id: currentUser.id, reaction: emoji });
+        // notify owner (if not me)
+        const ownerId = postOwnerMap[sid];
+        if (ownerId && ownerId !== currentUser.id) {
+          await supabase.from('notifications').insert({
+            user_id: ownerId, actor_id: currentUser.id, type: 'like',
+            message: `${currentUser.username} reacted ${emoji} to your status`,
+            related_id: sid
+          });
+        }
       }
-      // Update UI in place
-      btn.classList.toggle('liked');
-      const span = btn.querySelector(`[data-like-count="${sid}"]`);
-      const n = parseInt(span.textContent, 10) || 0;
-      span.textContent = isLiked ? Math.max(0, n - 1) : n + 1;
-      btn.firstChild.textContent = (isLiked ? '🤍' : '❤️') + ' ';
+      // refresh the section the card lives in
+      const inMine = container.id === 'myStatusList';
+      if (inMine) loadMyStatuses(); else loadFeed();
     }));
 
     // TOGGLE comments
     container.querySelectorAll('[data-toggle-comments]').forEach(btn => btn.addEventListener('click', async () => {
       const sid = btn.dataset.toggleComments;
       const area = container.querySelector(`[data-comments="${sid}"]`);
-      const isOpen = area.classList.toggle('open');
-      if (isOpen) await loadComments(sid, container);
+      const open = area.classList.toggle('open');
+      if (open) await loadComments(sid, container);
     }));
 
     // SEND comment
@@ -480,19 +499,25 @@
       const text = input.value.trim();
       if (!text) return;
       btn.disabled = true;
-      const { error } = await supabase.from('status_comments').insert({
-        status_id: sid, user_id: currentUser.id, content: text
-      });
+      const { error } = await supabase.from('status_comments').insert({ status_id: sid, user_id: currentUser.id, content: text });
       btn.disabled = false;
       if (error) { alert('Error: '+error.message); return; }
       input.value = '';
       await loadComments(sid, container);
-      // bump comment count
       const span = container.querySelector(`[data-comment-count="${sid}"]`);
       span.textContent = (parseInt(span.textContent,10) || 0) + 1;
+      // notify owner
+      const ownerId = postOwnerMap[sid];
+      if (ownerId && ownerId !== currentUser.id) {
+        await supabase.from('notifications').insert({
+          user_id: ownerId, actor_id: currentUser.id, type: 'comment',
+          message: `${currentUser.username} commented on your status`,
+          related_id: sid
+        });
+      }
     }));
 
-    // EDIT (own statuses only)
+    // EDIT
     container.querySelectorAll('[data-edit]').forEach(btn => btn.addEventListener('click', async () => {
       const sid = btn.dataset.edit;
       const contentEl = container.querySelector(`[data-content="${sid}"]`);
@@ -501,18 +526,35 @@
       if (newText === null) return;
       const trimmed = newText.trim();
       if (!trimmed || trimmed === oldText) return;
-      const { error } = await supabase.from('statuses')
-        .update({ content: trimmed, edited_at: new Date().toISOString() })
-        .eq('id', sid);
-      if (error) { alert('Error: '+error.message); return; }
+      await supabase.from('statuses').update({ content: trimmed, edited_at: new Date().toISOString() }).eq('id', sid);
       loadMyStatuses();
     }));
 
-    // DELETE (own statuses only)
+    // DELETE
     container.querySelectorAll('[data-del]').forEach(btn => btn.addEventListener('click', async () => {
       if (!confirm('Delete this status?')) return;
       await supabase.from('statuses').delete().eq('id', btn.dataset.del);
       loadMyStatuses();
+    }));
+
+    // VIEWS popup (own statuses)
+    container.querySelectorAll('[data-views]').forEach(btn => btn.addEventListener('click', async () => {
+      const sid = btn.dataset.views;
+      const { data } = await supabase
+        .from('status_views')
+        .select('viewed_at, app_users(username, email)')
+        .eq('status_id', sid)
+        .order('viewed_at', { ascending: false });
+      if (!data || data.length === 0) { openModal('Viewers', '<div class="empty">No one has viewed this yet.</div>'); return; }
+      const html = data.map(v => `
+        <div class="item">
+          ${avatarHtml(v.app_users?.username || '?')}
+          <div class="body">
+            <div class="name">${escapeHtml(v.app_users?.username || 'Unknown')}</div>
+            <div class="meta">${escapeHtml(v.app_users?.email || '')} · ${timeAgo(v.viewed_at)}</div>
+          </div>
+        </div>`).join('');
+      openModal(`Viewers (${data.length})`, html);
     }));
   }
 
@@ -521,13 +563,9 @@
     const { data, error } = await supabase
       .from('status_comments')
       .select('id, content, created_at, user_id, app_users(username)')
-      .eq('status_id', statusId)
-      .order('created_at', { ascending: true });
+      .eq('status_id', statusId).order('created_at', { ascending: true });
     if (error) { listEl.innerHTML = `<div class="empty">Error: ${escapeHtml(error.message)}</div>`; return; }
-    if (!data || data.length === 0) {
-      listEl.innerHTML = '<div class="empty" style="padding:6px;">No comments yet. Be first!</div>';
-      return;
-    }
+    if (!data || data.length === 0) { listEl.innerHTML = '<div class="empty" style="padding:6px;">No comments yet. Be first!</div>'; return; }
     listEl.innerHTML = data.map(c => {
       const u = c.app_users?.username || 'Unknown';
       const mine = c.user_id === currentUser.id;
@@ -539,8 +577,7 @@
             <div class="text">${escapeHtml(c.content)}</div>
             <div class="meta">${timeAgo(c.created_at)}${mine ? ` · <a href="#" data-del-comment="${c.id}">delete</a>` : ''}</div>
           </div>
-        </div>
-      `;
+        </div>`;
     }).join('');
     listEl.querySelectorAll('[data-del-comment]').forEach(a => a.addEventListener('click', async e => {
       e.preventDefault();
@@ -555,91 +592,80 @@
   async function loadMyStatuses() {
     const { data, error } = await supabase
       .from('statuses')
-      .select('id, content, created_at, expires_at, edited_at')
+      .select('id, content, created_at, expires_at, edited_at, user_id')
       .eq('user_id', currentUser.id)
       .gt('expires_at', new Date().toISOString())
       .order('created_at', { ascending: false });
-    const list = document.getElementById('myStatusList');
-    const count = document.getElementById('myStatusCount');
+    const list = document.getElementById('myStatusList'), count = document.getElementById('myStatusCount');
     if (error) { list.innerHTML = `<div class="empty">Error: ${escapeHtml(error.message)}</div>`; return; }
     count.textContent = data.length;
     if (data.length === 0) { list.innerHTML = '<div class="empty">Nothing posted yet.</div>'; return; }
-
     const ids = data.map(s => s.id);
     const eng = await fetchEngagement(ids);
-
+    const ownerMap = {}; data.forEach(s => ownerMap[s.id] = s.user_id);
     list.innerHTML = data.map(s => renderStatusCard(s, {
-      isMine: true,
-      username: currentUser.username,
-      likeCount: eng.likeCounts[s.id] || 0,
-      liked: !!eng.likedByMe[s.id],
-      commentCount: eng.commentCounts[s.id] || 0
+      isMine: true, username: currentUser.username,
+      reactionCounts: eng.reactionCounts[s.id] || {},
+      myReact: eng.myReactions[s.id],
+      commentCount: eng.commentCounts[s.id] || 0,
+      viewCount: eng.viewCounts[s.id] || 0
     })).join('');
-    bindStatusActions(list);
+    bindStatusActions(list, ownerMap);
   }
 
   // ===== Feed =====
   async function loadFeed() {
-    const { data: follows, error: e1 } = await supabase
-      .from('follow_requests')
-      .select('to_user_id')
-      .eq('from_user_id', currentUser.id)
-      .eq('status', 'accepted');
-    const list = document.getElementById('feedList');
-    const count = document.getElementById('feedCount');
-    if (e1) { list.innerHTML = `<div class="empty">Error: ${escapeHtml(e1.message)}</div>`; return; }
-    const followedIds = follows.map(f => f.to_user_id);
+    const { data: follows } = await supabase
+      .from('follow_requests').select('to_user_id')
+      .eq('from_user_id', currentUser.id).eq('status', 'accepted');
+    const list = document.getElementById('feedList'), count = document.getElementById('feedCount');
+    const followedIds = (follows || []).map(f => f.to_user_id);
     if (followedIds.length === 0) {
       count.textContent = 0;
       list.innerHTML = '<div class="empty">Follow people to see their statuses here.</div>';
       return;
     }
-    const { data: posts, error: e2 } = await supabase
+    const { data: posts } = await supabase
       .from('statuses')
       .select('id, content, created_at, expires_at, edited_at, user_id, app_users(username)')
       .in('user_id', followedIds)
       .gt('expires_at', new Date().toISOString())
       .order('created_at', { ascending: false });
-    if (e2) { list.innerHTML = `<div class="empty">Error: ${escapeHtml(e2.message)}</div>`; return; }
-    count.textContent = posts.length;
-    if (posts.length === 0) {
+    count.textContent = (posts || []).length;
+    if (!posts || posts.length === 0) {
       list.innerHTML = '<div class="empty">No active statuses from people you follow.</div>';
       return;
     }
     const ids = posts.map(p => p.id);
     const eng = await fetchEngagement(ids);
-
+    const ownerMap = {}; posts.forEach(p => ownerMap[p.id] = p.user_id);
     list.innerHTML = posts.map(p => renderStatusCard(p, {
-      isMine: false,
-      username: p.app_users?.username || 'Unknown',
-      likeCount: eng.likeCounts[p.id] || 0,
-      liked: !!eng.likedByMe[p.id],
+      isMine: false, username: p.app_users?.username || 'Unknown',
+      reactionCounts: eng.reactionCounts[p.id] || {},
+      myReact: eng.myReactions[p.id],
       commentCount: eng.commentCounts[p.id] || 0
     })).join('');
-    bindStatusActions(list);
+    bindStatusActions(list, ownerMap);
+
+    // Mark all as viewed (unique constraint ignores duplicates)
+    const rows = posts.map(p => ({ status_id: p.id, viewer_id: currentUser.id }));
+    if (rows.length) {
+      await supabase.from('status_views').upsert(rows, { onConflict: 'status_id,viewer_id', ignoreDuplicates: true });
+    }
   }
 
   // ===== Discover users =====
   async function loadDiscover() {
-    const { data: users } = await supabase
-      .from('app_users')
-      .select('id, username, email')
-      .neq('id', currentUser.id)
+    const { data: users } = await supabase.from('app_users')
+      .select('id, username, email').neq('id', currentUser.id)
       .order('created_at', { ascending: false });
-    const { data: sent } = await supabase
-      .from('follow_requests')
-      .select('to_user_id, status')
-      .eq('from_user_id', currentUser.id);
-    const sentMap = {};
-    (sent || []).forEach(r => sentMap[r.to_user_id] = r.status);
+    const { data: sent } = await supabase.from('follow_requests')
+      .select('to_user_id, status').eq('from_user_id', currentUser.id);
+    const sentMap = {}; (sent || []).forEach(r => sentMap[r.to_user_id] = r.status);
 
-    const list = document.getElementById('discoverList');
-    const count = document.getElementById('discoverCount');
+    const list = document.getElementById('discoverList'), count = document.getElementById('discoverCount');
     count.textContent = (users || []).length;
-    if (!users || users.length === 0) {
-      list.innerHTML = '<div class="empty">No other users yet.</div>';
-      return;
-    }
+    if (!users || users.length === 0) { list.innerHTML = '<div class="empty">No other users yet.</div>'; return; }
     list.innerHTML = users.map(u => {
       const status = sentMap[u.id];
       let actionHtml;
@@ -647,33 +673,29 @@
       else if (status === 'pending')  actionHtml = `<button class="small secondary" disabled>Requested</button>`;
       else if (status === 'rejected') actionHtml = `<button class="small" data-follow="${u.id}">Try again</button>`;
       else                            actionHtml = `<button class="small" data-follow="${u.id}">Follow</button>`;
-      return `
-        <div class="item">
-          ${avatarHtml(u.username)}
-          <div class="body">
-            <div class="name">${escapeHtml(u.username)}</div>
-            <div class="meta">${escapeHtml(u.email)}</div>
-          </div>
-          <div class="actions">${actionHtml}</div>
-        </div>
-      `;
+      return `<div class="item">${avatarHtml(u.username)}
+        <div class="body"><div class="name">${escapeHtml(u.username)}</div><div class="meta">${escapeHtml(u.email)}</div></div>
+        <div class="actions">${actionHtml}</div></div>`;
     }).join('');
 
     list.querySelectorAll('[data-follow]').forEach(btn => btn.addEventListener('click', async () => {
       const toId = btn.dataset.follow;
-      await supabase.from('follow_requests')
-        .delete().eq('from_user_id', currentUser.id).eq('to_user_id', toId);
-      await supabase.from('follow_requests').insert({
-        from_user_id: currentUser.id, to_user_id: toId, status: 'pending'
+      await supabase.from('follow_requests').delete().eq('from_user_id', currentUser.id).eq('to_user_id', toId);
+      const { data: inserted } = await supabase.from('follow_requests')
+        .insert({ from_user_id: currentUser.id, to_user_id: toId, status: 'pending' })
+        .select('id').maybeSingle();
+      // notify the target
+      await supabase.from('notifications').insert({
+        user_id: toId, actor_id: currentUser.id, type: 'follow_request',
+        message: `${currentUser.username} sent you a follow request`,
+        related_id: inserted?.id || null
       });
       loadDiscover();
     }));
     list.querySelectorAll('[data-unfollow]').forEach(btn => btn.addEventListener('click', async () => {
       const toId = btn.dataset.unfollow;
-      await supabase.from('follow_requests')
-        .delete().eq('from_user_id', currentUser.id).eq('to_user_id', toId);
-      loadDiscover();
-      loadFeed();
+      await supabase.from('follow_requests').delete().eq('from_user_id', currentUser.id).eq('to_user_id', toId);
+      loadDiscover(); loadFeed();
     }));
   }
 
@@ -682,31 +704,26 @@
     const { data: reqs } = await supabase
       .from('follow_requests')
       .select('id, from_user_id, status, created_at, app_users!follow_requests_from_user_id_fkey(username, email)')
-      .eq('to_user_id', currentUser.id)
-      .eq('status', 'pending')
+      .eq('to_user_id', currentUser.id).eq('status', 'pending')
       .order('created_at', { ascending: false });
-    const list = document.getElementById('reqList');
-    const count = document.getElementById('reqCount');
+    const list = document.getElementById('reqList'), count = document.getElementById('reqCount');
     count.textContent = (reqs || []).length;
-    if (!reqs || reqs.length === 0) {
-      list.innerHTML = '<div class="empty">No requests right now.</div>';
-      return;
-    }
-    list.innerHTML = reqs.map(r => `
-      <div class="item">
-        ${avatarHtml(r.app_users?.username || '?')}
-        <div class="body">
-          <div class="name">${escapeHtml(r.app_users?.username || 'Unknown')}</div>
-          <div class="meta">${escapeHtml(r.app_users?.email || '')} · ${timeAgo(r.created_at)}</div>
-        </div>
-        <div class="actions">
-          <button class="small success" data-accept="${r.id}">Accept</button>
-          <button class="small danger"  data-reject="${r.id}">Reject</button>
-        </div>
-      </div>
-    `).join('');
+    if (!reqs || reqs.length === 0) { list.innerHTML = '<div class="empty">No requests right now.</div>'; return; }
+    list.innerHTML = reqs.map(r => `<div class="item">${avatarHtml(r.app_users?.username || '?')}
+      <div class="body"><div class="name">${escapeHtml(r.app_users?.username || 'Unknown')}</div>
+      <div class="meta">${escapeHtml(r.app_users?.email || '')} · ${timeAgo(r.created_at)}</div></div>
+      <div class="actions">
+        <button class="small success" data-accept="${r.id}" data-from="${r.from_user_id}">Accept</button>
+        <button class="small danger"  data-reject="${r.id}">Reject</button>
+      </div></div>`).join('');
     list.querySelectorAll('[data-accept]').forEach(btn => btn.addEventListener('click', async () => {
       await supabase.from('follow_requests').update({ status: 'accepted' }).eq('id', btn.dataset.accept);
+      // notify the requester
+      await supabase.from('notifications').insert({
+        user_id: btn.dataset.from, actor_id: currentUser.id, type: 'follow_accepted',
+        message: `${currentUser.username} accepted your follow request`,
+        related_id: btn.dataset.accept
+      });
       loadRequests();
     }));
     list.querySelectorAll('[data-reject]').forEach(btn => btn.addEventListener('click', async () => {
@@ -715,8 +732,55 @@
     }));
   }
 
-  // ===== Auto-refresh =====
-  setInterval(() => { if (currentUser) { loadFeed(); loadRequests(); } }, 15000);
+  // ===== Notifications =====
+  async function loadNotifications() {
+    const { data } = await supabase.from('notifications')
+      .select('id, type, message, is_read, created_at')
+      .eq('user_id', currentUser.id)
+      .order('created_at', { ascending: false })
+      .limit(20);
+    const list = document.getElementById('notifList');
+    const badge = document.getElementById('bellBadge');
+    const unread = (data || []).filter(n => !n.is_read).length;
+    if (unread > 0) { badge.textContent = unread; badge.classList.remove('hidden'); }
+    else { badge.classList.add('hidden'); }
+    if (!data || data.length === 0) { list.innerHTML = '<div class="empty">No notifications yet.</div>'; return; }
+    list.innerHTML = data.map(n => `
+      <div class="notif-item ${n.is_read ? '' : 'unread'}">
+        <div class="text">${escapeHtml(n.message)}<div class="time">${timeAgo(n.created_at)}</div></div>
+      </div>`).join('');
+  }
+
+  document.getElementById('bellBtn').addEventListener('click', async () => {
+    const panel = document.getElementById('notifPanel');
+    const wasOpen = panel.classList.contains('open');
+    panel.classList.toggle('open');
+    if (!wasOpen) {
+      // mark all as read
+      await supabase.from('notifications').update({ is_read: true })
+        .eq('user_id', currentUser.id).eq('is_read', false);
+      loadNotifications();
+    }
+  });
+  document.getElementById('markAllReadBtn').addEventListener('click', async () => {
+    await supabase.from('notifications').update({ is_read: true })
+      .eq('user_id', currentUser.id).eq('is_read', false);
+    loadNotifications();
+  });
+  // click outside panel to close
+  document.addEventListener('click', e => {
+    const panel = document.getElementById('notifPanel');
+    const bell = document.getElementById('bellBtn');
+    if (!panel.classList.contains('open')) return;
+    if (panel.contains(e.target) || bell.contains(e.target)) return;
+    panel.classList.remove('open');
+  });
+
+  // ===== Refresh all =====
+  async function refreshAll() {
+    await Promise.all([loadMyStatuses(), loadFeed(), loadDiscover(), loadRequests(), loadNotifications()]);
+  }
+  setInterval(() => { if (currentUser) { loadFeed(); loadRequests(); loadNotifications(); } }, 15000);
 
   // ===== Restore session =====
   const restored = JSON.parse(sessionStorage.getItem('currentUser') || 'null');
